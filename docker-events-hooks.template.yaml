@@ -10,4 +10,4 @@ options:
 
 hooks:
   - on: [{ type: network, event: create }, { type: container, event: create }]
-    command: "echo 1"
+    command: ["echo", "1"]

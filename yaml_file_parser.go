@@ -17,7 +17,7 @@ type Options struct {
 	Filters         []Event `yaml:"filters"`
 }
 
-type Command string // TODO: this should be accepted as string or slice
+type Command []string // TODO: this should be accepted as string or slice
 
 type Hooks struct {
 	On      []Event `yaml:"on"`
