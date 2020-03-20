@@ -1,0 +1,13 @@
+version: "1"
+
+options:
+  compose-file-path: ~
+  filters:
+    - type: container
+      event: create
+      identifier: asd
+    - { type: network, event: create }
+
+hooks:
+  - on: [{ type: network, event: create }, { type: container, event: create }]
+    command: "echo 1"
