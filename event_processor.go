@@ -8,7 +8,7 @@ import (
 )
 
 func (hook Hooks) reactOnEvent(event events.Message) {
-	if false == hook.supportsEvent(event) {
+	if false == hook.EventList.supportsEvent(event) {
 		return
 	}
 
@@ -24,15 +24,15 @@ func (hook Hooks) reactOnEvent(event events.Message) {
 	cmd.Run()
 }
 
-func (hook Hooks) supportsEvent(event events.Message) bool {
-	for _, on := range hook.On {
-		if on.Type != nil && *on.Type != event.Type {
+func (eventList Events) supportsEvent(event events.Message) bool {
+	for _, singleEvent := range eventList {
+		if singleEvent.Type != nil && *singleEvent.Type != event.Type {
 			continue
 		}
-		if on.Action != nil && *on.Action != event.Action {
+		if singleEvent.Action != nil && *singleEvent.Action != event.Action {
 			continue
 		}
-		if on.Identifier != nil && *on.Identifier != event.ID {
+		if singleEvent.Identifier != nil && *singleEvent.Identifier != event.ID {
 			// handle name etc
 			continue
 		}
@@ -40,7 +40,7 @@ func (hook Hooks) supportsEvent(event events.Message) bool {
 		return true
 	}
 
-	return 0 == len(hook.On)
+	return 0 == len(eventList)
 }
 
 func ProcessEvent(yamlConfig YamlConfig, event events.Message) {

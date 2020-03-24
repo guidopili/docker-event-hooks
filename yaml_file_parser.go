@@ -12,17 +12,20 @@ type Event struct {
 	Identifier *string `yaml:"identifier,omitempty"`
 }
 
+type Events []Event
+
 type Options struct {
-	ComposeFilePath string  `yaml:"compose-file-path,omitempty"`
-	Filters         []Event `yaml:"filters"`
+	ComposeFilePath string `yaml:"compose-file-path,omitempty"`
+	Filters         Events `yaml:"filters"`
 }
 
 type Command []string // TODO: this should be accepted as string or slice
+type Arguments []string
 
 type Hooks struct {
-	On      []Event `yaml:"on"`
-	Command Command `yaml:"command"`
-	Arguments []string `yaml:"arguments"`
+	EventList Events    `yaml:"on"`
+	Command   Command   `yaml:"command"`
+	Arguments Arguments `yaml:"arguments"`
 }
 
 type YamlConfig struct {
