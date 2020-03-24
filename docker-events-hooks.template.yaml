@@ -4,10 +4,11 @@ options:
   compose-file-path: ~
   filters:
     - type: container
-      event: create
+      action: create
       identifier: asd
     - { type: network, event: create }
 
 hooks:
-  - on: [{ type: network, event: create }, { type: container, event: create }]
-    command: ["echo", "1"]
+  - on: [{ type: network, action: create }, { type: container, action: create }]
+    command: ["curl", "-XPOST", "https://webhook.site/b264c941-b595-4e7a-96af-7299149fb4a5"]
+    arguments: ['-d "{Time: {{.TimeNano}}}"']

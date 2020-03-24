@@ -7,9 +7,9 @@ import (
 )
 
 type Event struct {
-	Type       string `yaml:"type"`
-	Event      string `yaml:"event"`
-	Identifier string `yaml:"identifier,omitempty"`
+	Type       *string `yaml:"type"`
+	Action     *string `yaml:"action"`
+	Identifier *string `yaml:"identifier,omitempty"`
 }
 
 type Options struct {
@@ -22,6 +22,7 @@ type Command []string // TODO: this should be accepted as string or slice
 type Hooks struct {
 	On      []Event `yaml:"on"`
 	Command Command `yaml:"command"`
+	Arguments []string `yaml:"arguments"`
 }
 
 type YamlConfig struct {

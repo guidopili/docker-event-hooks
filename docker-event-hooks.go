@@ -21,7 +21,7 @@ func handleError(err error) {
 	os.Exit(1)
 }
 
-func eventsDaemon() {
+func eventsDaemon(yamlConfig YamlConfig) {
 	ctx := context.Background()
 	cli, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
@@ -31,12 +31,12 @@ func eventsDaemon() {
 	defer ctx.Done()
 
 	for {
-		ProcessEvent(<-cEvents)
+		ProcessEvent(yamlConfig, <-cEvents)
 	}
 }
 
 func main() {
 	Configure()
-	ParseConfigFile(config.ConfigFilePath)
-	eventsDaemon()
+	config := ParseConfigFile(config.ConfigFilePath)
+	eventsDaemon(config)
 }
