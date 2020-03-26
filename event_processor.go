@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	"github.com/docker/docker/api/types/events"
+	"fmt"
 	"os/exec"
 	"text/template"
 )
 
-func (hook Hooks) reactOnEvent(event events.Message) {
+func (hook Hooks) reactOnEvent(event DockerEvent) {
 	if false == hook.EventList.supportsEvent(event) {
 		return
 	}
@@ -24,7 +24,7 @@ func (hook Hooks) reactOnEvent(event events.Message) {
 	cmd.Run()
 }
 
-func (eventList Events) supportsEvent(event events.Message) bool {
+func (eventList Events) supportsEvent(event DockerEvent) bool {
 	for _, singleEvent := range eventList {
 		if singleEvent.Type != nil && *singleEvent.Type != event.Type {
 			continue
@@ -43,7 +43,8 @@ func (eventList Events) supportsEvent(event events.Message) bool {
 	return 0 == len(eventList)
 }
 
-func ProcessEvent(yamlConfig YamlConfig, event events.Message) {
+func ProcessEvent(yamlConfig YamlConfig, event DockerEvent) {
+	fmt.Println(event)
 	for _, hook := range yamlConfig.Hooks {
 		hook.reactOnEvent(event)
 	}

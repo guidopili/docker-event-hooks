@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	"os"
 )
 
@@ -23,12 +21,9 @@ func handleError(err error) {
 
 func eventsDaemon(yamlConfig YamlConfig) {
 	ctx := context.Background()
-	cli, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-
-	opts := types.EventsOptions{}
-	cEvents, _ := cli.Events(ctx, opts)
-
 	defer ctx.Done()
+
+	cEvents, _ := eventsReader(ctx, yamlConfig)
 
 	for {
 		ProcessEvent(yamlConfig, <-cEvents)
