@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
+	"os"
 )
 
-// Message represents the information an event contains
+const SocketName = "/var/run/docker.sock"
+
 type DockerEvent struct {
 	ID     string `json:"id,omitempty"`
 	From   string `json:"from,omitempty"`
@@ -21,7 +24,7 @@ type DockerEvent struct {
 	TimeNano int64 `json:"timeNano,omitempty"`
 }
 
-func eventsReader(ctx context.Context, yamlConfig YamlConfig)  (<-chan DockerEvent, <-chan error)  {
+func eventsReader(ctx context.Context, jsonConfig JsonConfig)  (<-chan DockerEvent, <-chan error)  {
 	messages := make(chan DockerEvent)
 	errs := make(chan error, 1)
 
@@ -30,19 +33,45 @@ func eventsReader(ctx context.Context, yamlConfig YamlConfig)  (<-chan DockerEve
 	go func() {
 		defer close(errs)
 
-		httpc := http.Client{
+		handleErr := func(err error) bool {
+			if err != nil {
+				close(started)
+				errs <- err
+				return true
+			}
+
+			return false
+		}
+
+		info, err := os.Stat(SocketName)
+		if os.IsNotExist(err) || info.Mode() & os.ModeSocket != os.ModeSocket {
+			close(started)
+			errs <- err
+			return
+		}
+
+		client := http.Client{
 			Transport: &http.Transport{
 				DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
-					return net.Dial("unix", "/var/run/docker.sock")
+					return net.Dial("unix", SocketName)
 				},
 			},
 		}
 
-		response, err := httpc.Get("http://docker/v1.40/events")
+		r, err := client.Head("http://docker/_ping")
+		if handleErr(err) {
+			return
+		}
 
-		if err != nil {
-			close(started)
-			errs <- err
+		apiVersion := r.Header.Get("Api-Version")
+
+		if apiVersion == "" {
+			apiVersion = "1.40"
+		}
+
+		response, err := client.Get(fmt.Sprintf("http://docker/v%s/events?type=container&type=network", apiVersion))
+
+		if handleErr(err) {
 			return
 		}
 

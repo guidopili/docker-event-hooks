@@ -1,0 +1,40 @@
+{
+  "version": "1",
+  "options": {
+    "compose-file-path": null,
+    "filters": [
+      {
+        "type": "network",
+        "action": "create",
+        "identifier": "asd"
+      },
+      {
+        "type": "container",
+        "action": "create"
+      }
+    ]
+  },
+  "hooks": [
+    {
+      "on": [
+        {
+          "type": "network",
+          "action": "create"
+        },
+        {
+          "type": "container",
+          "action": "create"
+        }
+      ],
+      "command": [
+        "curl",
+        "-XPOST",
+        "https://webhook.site/b264c941-b595-4e7a-96af-7299149fb4a5"
+      ],
+      "arguments": [
+        "-d Time={{.TimeNano}}",
+        "-d Actor={{index .Actor.Attributes \"name\"}}"
+      ]
+    }
+  ]
+}

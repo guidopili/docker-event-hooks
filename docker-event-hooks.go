@@ -19,14 +19,19 @@ func handleError(err error) {
 	os.Exit(1)
 }
 
-func eventsDaemon(yamlConfig YamlConfig) {
+func eventsDaemon(jsonConfig JsonConfig) {
 	ctx := context.Background()
 	defer ctx.Done()
 
-	cEvents, _ := eventsReader(ctx, yamlConfig)
+	cEvents, err := eventsReader(ctx, jsonConfig)
 
 	for {
-		ProcessEvent(yamlConfig, <-cEvents)
+		select {
+			case e := <-err:
+				handleError(e)
+			default:
+				ProcessEvent(jsonConfig, <-cEvents)
+		}
 	}
 }
 

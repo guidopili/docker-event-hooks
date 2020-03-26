@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
 	"text/template"
 )
@@ -43,9 +42,12 @@ func (eventList Events) supportsEvent(event DockerEvent) bool {
 	return 0 == len(eventList)
 }
 
-func ProcessEvent(yamlConfig YamlConfig, event DockerEvent) {
-	fmt.Println(event)
-	for _, hook := range yamlConfig.Hooks {
+func ProcessEvent(jsonConfig JsonConfig, event DockerEvent) {
+	if jsonConfig.shouldFilterEvent(event) {
+		return
+	}
+
+	for _, hook := range jsonConfig.Hooks {
 		hook.reactOnEvent(event)
 	}
 }
