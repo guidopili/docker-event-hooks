@@ -1,18 +1,7 @@
 {
   "version": "1",
   "options": {
-    "compose-file-path": null,
-    "filters": [
-      {
-        "type": "network",
-        "action": "create",
-        "identifier": "asd"
-      },
-      {
-        "type": "container",
-        "action": "create"
-      }
-    ]
+    "compose-file-path": null
   },
   "hooks": [
     {
