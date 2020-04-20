@@ -7,7 +7,9 @@ import (
 )
 
 var config Config
+
 var version string
+var binName string
 
 type Config struct {
 	ConfigFilePath string
@@ -15,40 +17,53 @@ type Config struct {
 	Detach         bool
 }
 
-func configureStartArgs() {
-	command := flag.NewFlagSet("start", flag.ExitOnError)
+func initConfig() {
+	config.ConfigFilePath = "config.json"
+	config.Verbose = false
+	config.Detach = false
+}
 
-	command.StringVar(&config.ConfigFilePath, "file", "docker-events-hooks.json", "File path (defaults to current dir)")
-	command.StringVar(&config.ConfigFilePath, "f", "docker-events-hooks.json", "File path (defaults to current dir)")
-	command.BoolVar(&config.Verbose, "verbose", false, "Verbose mode")
-	command.BoolVar(&config.Verbose, "v", false, "Verbose mode")
-	command.BoolVar(&config.Detach, "detach", false, "Detach from shell mode")
-	command.BoolVar(&config.Detach, "d", false, "Detach from shell mode")
+func configureFlags(args []string) *flag.FlagSet {
+	command := flag.NewFlagSet(binName, flag.ExitOnError)
 
-	_ = command.Parse(os.Args[2:])
+	command.StringVar(&config.ConfigFilePath, "file", config.ConfigFilePath, "File path (defaults to current dir)")
+	command.StringVar(&config.ConfigFilePath, "f", config.ConfigFilePath, "File path (defaults to current dir)")
+	command.BoolVar(&config.Verbose, "verbose", config.Verbose, "Verbose mode")
+	command.BoolVar(&config.Verbose, "v", config.Verbose, "Verbose mode")
+	command.BoolVar(&config.Detach, "detach", config.Detach, "Detach from shell mode")
+	command.BoolVar(&config.Detach, "d", config.Detach, "Detach from shell mode")
+
+	command.Parse(args)
+
+	return command
 }
 
 func printHelp() {
-	_, _ = fmt.Fprintf(os.Stderr, "Command required at first position. Options are \n - configureStartArgs\n - stop\n - version\n - help\n")
+	_, _ = fmt.Fprintf(os.Stderr, "Command required at first position. Options are \n - start\n - stop\n - version\n - help\n")
 	os.Exit(1)
 }
 
 func Configure() {
-	if len(os.Args) < 2 {
-		printHelp()
+	initConfig()
+
+	requestedCommand := ""
+	if len(os.Args) > 1 {
+		command := configureFlags(os.Args[1:])
+		requestedCommand = command.Arg(0)
+		if command.NArg() > 1 {
+			_ = configureFlags(command.Args()[1:])
+		}
 	}
 
-	switch os.Args[1] {
+	switch requestedCommand {
 	case "start":
-		configureStartArgs()
-		break
 	case "stop":
 		stopBg()
-		break
 	case "version":
 		fmt.Println(version)
 		os.Exit(0)
 	case "help":
+		printHelp()
 	default:
 		printHelp()
 	}
