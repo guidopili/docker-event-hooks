@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 type Event struct {
@@ -47,9 +47,20 @@ func ParseConfigFile(filename string) JsonConfig {
 	err = json.Unmarshal(dat, &y)
 	handleError(err)
 
-	fmt.Println("Version: ", y.Version)
-	fmt.Println("Options: ", y.Options.Filters)
-	fmt.Println("Hooks: ", y.Hooks)
+	if config.Verbose {
+		log.Printf("Config Version: %v", y.Version)
+		log.Printf("Options.ComposeFilePath: %v", y.Options.ComposeFilePath)
+		log.Printf("Options.Filters:")
+		for _, f := range y.Options.Filters {
+			j, _ := json.Marshal(f)
+			log.Printf("	%v", string(j))
+		}
+		log.Printf("Hooks:")
+		for _, h := range y.Hooks {
+			j, _ := json.Marshal(h)
+			log.Printf("	%v", string(j))
+		}
+	}
 
 	return y
 }

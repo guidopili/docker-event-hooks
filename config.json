@@ -29,7 +29,7 @@
       "command": [
         "curl",
         "-XPOST",
-        "https://webhook.site/b264c941-b595-4e7a-96af-7299149fb4a5"
+        "https://webhook.site/44772a00-60cb-44b5-8384-340f10a8ae89"
       ],
       "arguments": [
         "-d Time={{.TimeNano}}",

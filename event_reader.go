@@ -24,7 +24,7 @@ type DockerEvent struct {
 	TimeNano int64 `json:"timeNano,omitempty"`
 }
 
-func eventsReader(ctx context.Context, jsonConfig JsonConfig)  (<-chan DockerEvent, <-chan error)  {
+func eventsReader(ctx context.Context)  (<-chan DockerEvent, <-chan error)  {
 	messages := make(chan DockerEvent)
 	errs := make(chan error, 1)
 

@@ -11,6 +11,7 @@
 *.out
 
 docker-event-hooks
+.docker-event-hooks/
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

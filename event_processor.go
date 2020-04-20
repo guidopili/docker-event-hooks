@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"fmt"
+	"log"
 	"os/exec"
 	"text/template"
 )
@@ -43,7 +45,10 @@ func (eventList Events) supportsEvent(event DockerEvent) bool {
 }
 
 func ProcessEvent(jsonConfig JsonConfig, event DockerEvent) {
+	log.Println(fmt.Sprintf("Received event with ID: %v", event.ID))
+
 	if jsonConfig.shouldFilterEvent(event) {
+		log.Println(fmt.Sprintf("Event %v filtered by options.filter", event.ID))
 		return
 	}
 

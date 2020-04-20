@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 )
 
 func handleError(err error) {
@@ -19,11 +20,11 @@ func handleError(err error) {
 	os.Exit(1)
 }
 
-func eventsDaemon(jsonConfig JsonConfig) {
+func eventsHandler(jsonConfig JsonConfig) {
 	ctx := context.Background()
 	defer ctx.Done()
 
-	cEvents, err := eventsReader(ctx, jsonConfig)
+	cEvents, err := eventsReader(ctx)
 
 	for {
 		select {
@@ -37,6 +38,10 @@ func eventsDaemon(jsonConfig JsonConfig) {
 
 func main() {
 	Configure()
-	config := ParseConfigFile(config.ConfigFilePath)
-	eventsDaemon(config)
+
+	if config.Detach == true {
+		startBg(exec.Command(os.Args[0], append(os.Args[1:], "-d=false")...))
+	}
+
+	eventsHandler(ParseConfigFile(config.ConfigFilePath))
 }
