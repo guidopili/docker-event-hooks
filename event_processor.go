@@ -13,16 +13,21 @@ func (hook Hooks) reactOnEvent(event DockerEvent) {
 		return
 	}
 
-	cmd := exec.Command(hook.Command[0], hook.Command[1:]...)
+	for _, command := range hook.Commands {
+		cmd := exec.Command(command[0])
 
-	for _, args := range hook.Arguments {
-		t, _ := template.New("argument").Parse(args)
-		var tpl bytes.Buffer
-		t.Execute(&tpl, event)
-		cmd.Args = append(cmd.Args, tpl.String())
+		if len(command) > 1 {
+			for _, args := range command[1:] {
+				t, _ := template.New("argument").Parse(args)
+				var tpl bytes.Buffer
+				t.Execute(&tpl, event)
+				cmd.Args = append(cmd.Args, tpl.String())
+			}
+		}
+
+		commandOut, _ := cmd.CombinedOutput()
+		log.Println(string(commandOut))
 	}
-
-	cmd.Run()
 }
 
 func (eventList Events) supportsEvent(event DockerEvent) bool {

@@ -19,13 +19,11 @@ type Options struct {
 	Filters         Events `json:"filters"`
 }
 
-type Command []string // TODO: this should be accepted as string or slice
-type Arguments []string
+type Command   []string // TODO: this should be accepted as string or slice
 
 type Hooks struct {
-	EventList Events    `json:"on"`
-	Command   Command   `json:"command"`
-	Arguments Arguments `json:"arguments"`
+	EventList  Events    `json:"on"`
+	Commands   []Command   `json:"commands"`
 }
 
 type JsonConfig struct {

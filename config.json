@@ -7,22 +7,14 @@
     {
       "on": [
         {
-          "type": "network",
-          "action": "create"
-        },
-        {
           "type": "container",
-          "action": "create"
+          "action": "create",
+          "name": "microservice-skeleton_redis_1"
         }
       ],
-      "command": [
-        "curl",
-        "-XPOST",
-        "https://webhook.site/44772a00-60cb-44b5-8384-340f10a8ae89"
-      ],
-      "arguments": [
-        "-d Time={{.TimeNano}}",
-        "-d Actor={{index .Actor.Attributes \"name\"}}"
+      "commands": [
+        ["docker", "cp", "/Users/gpili/Documents/workspace/local/build/redis/redis-config.redis", "{{index .Actor.Attributes \"name\"}}:/tmp"],
+        ["docker", "cp", "/Users/gpili/Documents/workspace/local/build/redis/redis-platform-config.redis", "{{index .Actor.Attributes \"name\"}}:/tmp"]
       ]
     }
   ]
